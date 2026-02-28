@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tests — Portfolio JS</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            background: #111;
+            color: #e5e5e5;
+            padding: 32px;
+        }
+        h1 { font-size: 16px; color: #818cf8; margin-bottom: 24px; letter-spacing: 0.05em; }
+        .suite { margin: 20px 0; }
+        .suite-name {
+            font-size: 11px;
+            color: #57534e;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 6px;
+        }
+        .test {
+            padding: 5px 10px;
+            margin: 2px 0;
+            border-radius: 4px;
+            display: flex;
+            gap: 8px;
+        }
+        .pass { background: rgba(34,197,94,0.08); color: #4ade80; }
+        .fail { background: rgba(239,68,68,0.12); color: #f87171; }
+        .detail { opacity: 0.6; }
+        .summary {
+            margin-top: 28px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .all-pass { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .has-fail  { background: rgba(239,68,68,0.15);  color: #f87171; }
+
+        /* ── Minimal portfolio DOM ── */
+        nav, form, section { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Minimal DOM required by script.js
+     (hidden — only used by JS logic)
+═══════════════════════════════════════════════════════════ -->
+<nav id="nav">
+    <div class="nav-links">
+        <a class="nav-link" href="#about" data-fr="À propos" data-en="About">À propos</a>
+        <a class="nav-link" href="#work"  data-fr="Projets"  data-en="Work">Projets</a>
+        <button type="button" id="themeToggle" aria-label="Toggle dark mode">
+            <span class="theme-icon theme-icon-light">☀</span>
+            <span class="theme-icon theme-icon-dark">☾</span>
+        </button>
+        <button type="button" id="langSwitch" aria-label="Switch language">
+            <span class="lang-option active" data-lang="fr">FR</span>
+            <span class="lang-divider">/</span>
+            <span class="lang-option" data-lang="en">EN</span>
+        </button>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<section id="hero">
+    <span data-fr="Transformer la complexité en systèmes élégants"
+          data-en="Transforming complexity into systems that scale">
+        Transformer la complexité en systèmes élégants
+    </span>
+</section>
+
+<section id="about">
+    <span data-fr="Du print au" data-en="From print to">Du print au</span>
+</section>
+
+<section id="process">
+    <div class="process-step">
+        <h3 data-fr="Research & Discovery" data-en="Research & Discovery">Research & Discovery</h3>
+    </div>
+</section>
+
+<section id="contact">
+    <h2 data-fr="Discutons" data-en="Let's Talk">Discutons</h2>
+</section>
+
+<form id="contactForm" novalidate>
+    <div class="form-group">
+        <input type="text"  id="name"    name="name"    required>
+        <span class="error-message" data-fr="Veuillez entrer votre nom" data-en="Please enter your name">Veuillez entrer votre nom</span>
+    </div>
+    <div class="form-group">
+        <input type="email" id="email"   name="email"   required>
+        <span class="error-message" data-fr="Veuillez entrer un email valide" data-en="Please enter a valid email">Veuillez entrer un email valide</span>
+    </div>
+    <div class="form-group">
+        <input type="text"  id="subject" name="subject" required>
+        <span class="error-message" data-fr="Veuillez entrer un sujet" data-en="Please enter a subject">Veuillez entrer un sujet</span>
+    </div>
+    <div class="form-group">
+        <textarea id="message" name="message" required></textarea>
+        <span class="error-message" data-fr="Veuillez entrer un message" data-en="Please enter a message">Veuillez entrer un message</span>
+    </div>
+    <div class="form-group">
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+    </div>
+    <button type="submit">
+        <span data-fr="Envoyer le message" data-en="Send Message">Envoyer le message</span>
+    </button>
+    <div class="form-success" style="display:none">
+        <span data-fr="Message envoyé avec succès !" data-en="Message sent successfully!">
+            Message envoyé avec succès !
+        </span>
+    </div>
+</form>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Test output
+═══════════════════════════════════════════════════════════ -->
+<h1>PORTFOLIO — TEST SUITE</h1>
+<div id="results"></div>
+
+<!-- Load portfolio JS -->
+<script src="script.js"></script>
+
+<!-- Test runner -->
+<script>
+(function () {
+    'use strict';
+
+    const results = document.getElementById('results');
+    let passCount = 0;
+    let failCount = 0;
+    let currentSuite = null;
+
+    function suite(name) {
+        const div = document.createElement('div');
+        div.className = 'suite';
+        div.innerHTML = `<div class="suite-name">${name}</div>`;
+        results.appendChild(div);
+        currentSuite = div;
+    }
+
+    function test(name, fn) {
+        let passed = false;
+        let detail = '';
+        try {
+            const result = fn();
+            if (typeof result === 'string') {
+                detail = result;
+                passed = false;
+            } else {
+                passed = !!result;
+            }
+        } catch (e) {
+            detail = e.message;
+            passed = false;
+        }
+
+        const div = document.createElement('div');
+        div.className = `test ${passed ? 'pass' : 'fail'}`;
+        div.innerHTML = `<span>${passed ? '✓' : '✗'}</span><span>${name}</span>${detail ? `<span class="detail">${detail}</span>` : ''}`;
+        currentSuite.appendChild(div);
+        passed ? passCount++ : failCount++;
+    }
+
+    function assert(condition, msg) {
+        if (!condition) throw new Error(msg || 'assertion failed');
+        return true;
+    }
+
+    // ── Reset helpers ──────────────────────────────────────────────────────
+
+    function resetTheme(to = 'light') {
+        document.documentElement.setAttribute('data-theme', to);
+        // Sync internal state by calling setTheme if exposed, else force attribute
+        if (typeof setTheme === 'function') setTheme(to);
+    }
+
+    function resetLang(to = 'fr') {
+        if (typeof setLanguage === 'function') setLanguage(to);
+    }
+
+    // Wait for DOMContentLoaded / app init (already done since script ran synchronously)
+    // ──────────────────────────────────────────────────────────────────────────────────
+
+    // ══ Suite 1: Chargement du JS ══════════════════════════════════════════
+    suite('1 — Chargement du script.js');
+
+    test('init() existe', () => assert(typeof init === 'function'));
+    test('initThemeSwitch() existe', () => assert(typeof initThemeSwitch === 'function'));
+    test('setTheme() existe', () => assert(typeof setTheme === 'function'));
+    test('initLanguageSwitch() existe', () => assert(typeof initLanguageSwitch === 'function'));
+    test('setLanguage() existe', () => assert(typeof setLanguage === 'function'));
+    test('initializeApp() existe', () => assert(typeof initializeApp === 'function'));
+
+    // ══ Suite 2: DOM attendu ══════════════════════════════════════════════
+    suite('2 — Présence des éléments DOM');
+
+    test('#themeToggle présent', () => assert(!!document.getElementById('themeToggle')));
+    test('#langSwitch présent',  () => assert(!!document.getElementById('langSwitch')));
+    test('.theme-icon-light présent', () => assert(!!document.querySelector('.theme-icon-light')));
+    test('.theme-icon-dark présent',  () => assert(!!document.querySelector('.theme-icon-dark')));
+    test('2 éléments .lang-option', () => assert(document.querySelectorAll('.lang-option').length === 2));
+    test('Éléments data-fr présents', () => assert(document.querySelectorAll('[data-fr]').length > 0));
+    test('Éléments data-en présents', () => assert(document.querySelectorAll('[data-en]').length > 0));
+    test('data-fr et data-en en même nombre', () => {
+        const fr = document.querySelectorAll('[data-fr]').length;
+        const en = document.querySelectorAll('[data-en]').length;
+        return assert(fr === en, `data-fr: ${fr}, data-en: ${en}`);
+    });
+
+    // ══ Suite 3: Dark mode toggle ═════════════════════════════════════════
+    suite('3 — Dark mode toggle');
+
+    resetTheme('light');
+    test('Départ : data-theme = light', () =>
+        assert(document.documentElement.getAttribute('data-theme') === 'light',
+               `actuel: ${document.documentElement.getAttribute('data-theme')}`));
+
+    document.getElementById('themeToggle').click();
+    test('1er clic → dark', () =>
+        assert(document.documentElement.getAttribute('data-theme') === 'dark',
+               `actuel: ${document.documentElement.getAttribute('data-theme')}`));
+
+    document.getElementById('themeToggle').click();
+    test('2ème clic → light', () =>
+        assert(document.documentElement.getAttribute('data-theme') === 'light',
+               `actuel: ${document.documentElement.getAttribute('data-theme')}`));
+
+    document.getElementById('themeToggle').click();
+    test('3ème clic → dark', () =>
+        assert(document.documentElement.getAttribute('data-theme') === 'dark',
+               `actuel: ${document.documentElement.getAttribute('data-theme')}`));
+
+    document.getElementById('themeToggle').click(); // reset to light
+    test('4ème clic → light (cycle complet)', () =>
+        assert(document.documentElement.getAttribute('data-theme') === 'light',
+               `actuel: ${document.documentElement.getAttribute('data-theme')}`));
+
+    // ══ Suite 4: Language switch ══════════════════════════════════════════
+    suite('4 — Language switch');
+
+    resetLang('fr');
+    const navLink = document.querySelector('.nav-link[data-fr="À propos"]');
+    const heroSpan = document.querySelector('[data-fr="Transformer la complexité en systèmes élégants"]');
+
+    test('Départ : html[lang] = fr', () =>
+        assert(document.documentElement.lang === 'fr',
+               `actuel: ${document.documentElement.lang}`));
+
+    test('Départ : FR option est active', () =>
+        assert(document.querySelector('.lang-option[data-lang="fr"]').classList.contains('active')));
+
+    test('Départ : EN option n\'est pas active', () =>
+        assert(!document.querySelector('.lang-option[data-lang="en"]').classList.contains('active')));
+
+    test('Départ : texte nav = "À propos"', () =>
+        assert(navLink.textContent.trim() === 'À propos',
+               `actuel: "${navLink.textContent.trim()}"`));
+
+    test('Départ : tagline hero en FR', () =>
+        assert(heroSpan.textContent.trim() === 'Transformer la complexité en systèmes élégants',
+               `actuel: "${heroSpan.textContent.trim()}"`));
+
+    document.getElementById('langSwitch').click();
+
+    test('Après clic : html[lang] = en', () =>
+        assert(document.documentElement.lang === 'en',
+               `actuel: ${document.documentElement.lang}`));
+
+    test('Après clic : EN option est active', () =>
+        assert(document.querySelector('.lang-option[data-lang="en"]').classList.contains('active'),
+               'EN devrait être active'));
+
+    test('Après clic : FR option n\'est plus active', () =>
+        assert(!document.querySelector('.lang-option[data-lang="fr"]').classList.contains('active'),
+               'FR ne devrait plus être active'));
+
+    test('Après clic : texte nav = "About"', () =>
+        assert(navLink.textContent.trim() === 'About',
+               `actuel: "${navLink.textContent.trim()}"`));
+
+    test('Après clic : tagline hero en EN', () =>
+        assert(heroSpan.textContent.trim() === 'Transforming complexity into systems that scale',
+               `actuel: "${heroSpan.textContent.trim()}"`));
+
+    document.getElementById('langSwitch').click();
+
+    test('Retour FR : html[lang] = fr', () =>
+        assert(document.documentElement.lang === 'fr',
+               `actuel: ${document.documentElement.lang}`));
+
+    test('Retour FR : texte revenu "À propos"', () =>
+        assert(navLink.textContent.trim() === 'À propos',
+               `actuel: "${navLink.textContent.trim()}"`));
+
+    // ══ Suite 5: setTheme + setLanguage directs ═══════════════════════════
+    suite('5 — Appels directs setTheme / setLanguage');
+
+    resetTheme('light');
+    test('setTheme("dark") applique data-theme=dark', () => {
+        setTheme('dark');
+        return assert(document.documentElement.getAttribute('data-theme') === 'dark');
+    });
+    test('setTheme("light") applique data-theme=light', () => {
+        setTheme('light');
+        return assert(document.documentElement.getAttribute('data-theme') === 'light');
+    });
+
+    resetLang('fr');
+    test('setLanguage("en") met à jour les textes', () => {
+        setLanguage('en');
+        return assert(navLink.textContent.trim() === 'About',
+                      `actuel: "${navLink.textContent.trim()}"`);
+    });
+    test('setLanguage("fr") remet les textes FR', () => {
+        setLanguage('fr');
+        return assert(navLink.textContent.trim() === 'À propos',
+                      `actuel: "${navLink.textContent.trim()}"`);
+    });
+
+    // ══ Suite 6: Paramètre URL ?lang= ════════════════════════════════════
+    suite('6 — Paramètre URL ?lang=');
+
+    test('setLanguage("en") via appel direct simule ?lang=en', () => {
+        setLanguage('en');
+        return assert(document.documentElement.lang === 'en',
+                      `actuel: ${document.documentElement.lang}`);
+    });
+    test('Texte mis à jour après setLanguage("en")', () => {
+        return assert(navLink.textContent.trim() === 'About',
+                      `actuel: "${navLink.textContent.trim()}"`);
+    });
+    test('setLanguage("fr") simule ?lang=fr', () => {
+        setLanguage('fr');
+        return assert(document.documentElement.lang === 'fr');
+    });
+    test('URLSearchParams parse correctement lang=en', () => {
+        const params = new URLSearchParams('?lang=en');
+        return assert(params.get('lang') === 'en');
+    });
+    test('URLSearchParams parse correctement lang=fr', () => {
+        const params = new URLSearchParams('?lang=fr');
+        return assert(params.get('lang') === 'fr');
+    });
+    test('URLSearchParams retourne null si absent', () => {
+        const params = new URLSearchParams('');
+        return assert(params.get('lang') === null);
+    });
+
+    // ══ Résumé ════════════════════════════════════════════════════════════
+    const total = passCount + failCount;
+    const summary = document.createElement('div');
+    summary.className = `summary ${failCount === 0 ? 'all-pass' : 'has-fail'}`;
+    summary.textContent = `${total} tests — ${passCount} ✓ passés, ${failCount} ✗ échoués`;
+    results.appendChild(summary);
+
+    console.log(`[Tests] ${passCount}/${total} passed`);
+})();
+</script>
+
+</body>
+</html>
