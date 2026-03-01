@@ -6,17 +6,26 @@
 
 # Import des Design Tokens dans Penpot
 
-Les 4 fichiers JSON de ce dossier suivent le format W3C DTCG (Design Token Community Group).
-Ils correspondent aux tokens CSS de `styles.css`, organisés en sets hiérarchiques.
+## Fichier à importer : `tokens.json`
+
+Un seul fichier combine tous les sets. C'est le seul fichier à importer dans Penpot.
+
+> Les fichiers `00-primitives.json`, `01-light.json`, `02-dark.json`, `03-work.json` sont des **références documentaires** — ne pas les importer directement (chaque import écrase tout).
+
+---
 
 ## Architecture des sets
 
-| Fichier | Set Penpot | Contenu |
-|---------|-----------|---------|
-| `00-primitives.json` | `primitives` | Palette brute, espacements, typographie |
-| `01-light.json` | `light` | Tokens sémantiques — mode Midi en Occitanie |
-| `02-dark.json` | `dark` | Tokens sémantiques — mode Crépuscule |
-| `03-work.json` | `work` | Sous-système section Work (L1/L2/L3) |
+Le fichier `tokens.json` contient 4 sets (clés de premier niveau) :
+
+| Clé (set name) | Contenu |
+|----------------|---------|
+| `primitives`   | Palette brute, espacements, radius, typographie |
+| `light`        | Tokens sémantiques — mode Midi en Occitanie |
+| `dark`         | Tokens sémantiques — mode Crépuscule |
+| `work`         | Sous-système section Work (L1/L2/L3) |
+
+---
 
 ## Import step-by-step
 
@@ -25,20 +34,14 @@ Ils correspondent aux tokens CSS de `styles.css`, organisés en sets hiérarchiq
 Dans Penpot, ouvre le fichier de design portfolio.
 Clique sur l'onglet **TOKENS** (icône `{ }` dans la sidebar droite).
 
-### 2. Importer les 4 sets
+### 2. Importer `tokens.json`
 
-Pour chaque fichier (dans cet ordre) :
+1. Clique sur le menu → **Import tokens**
+2. Sélectionne `export/tokens.json`
+3. Clique **IMPORT SINGLE JSON FILE**
+4. Confirme (l'import écrase les tokens existants)
 
-1. Clique sur **+** → **Import tokens**
-2. Sélectionne le fichier JSON
-3. Donne le nom du set :
-   - `00-primitives.json` → nom : `primitives`
-   - `01-light.json` → nom : `light`
-   - `02-dark.json` → nom : `dark`
-   - `03-work.json` → nom : `work`
-
-**Ordre recommandé :** primitives → light → dark → work
-(Les sets `light`, `dark` et `work` contiennent des aliases vers `primitives` — importer les primitives en premier garantit la résolution correcte.)
+→ Les 4 sets apparaissent dans le panneau TOKENS : `primitives`, `light`, `dark`, `work`
 
 ### 3. Créer les Themes
 
@@ -59,18 +62,18 @@ Dans l'onglet TOKENS → **Themes** :
 ### 4. Vérifier le switch de thème
 
 Teste le switch Light ↔ Dark :
-- `color.accent` doit passer de `#3A7A5A` (chêne vert) à `#C46828` (soleil couchant)
-- `color.background` doit passer de `#F2EDE4` (calcaire) à `#0C0E1A` (nuit indigo)
-- `work.*` reste identique dans les deux thèmes (section Work a son propre système inversé)
+- `light.color.accent` → `#3A7A5A` (chêne vert)
+- `dark.color.accent` → `#C46828` (soleil couchant)
+- `work.*` reste identique dans les deux thèmes
 
 ---
 
 ## Tokens à opacité variable
 
-Certains tokens sont définis avec une couleur solide dans le JSON, mais doivent être appliqués avec une opacité spécifique sur le shape Penpot.
+Couleur solide dans le JSON, opacité appliquée manuellement sur le shape Penpot :
 
-| Token JSON | Couleur | Opacité shape |
-|-----------|---------|---------------|
+| Token | Couleur hex | Opacité shape |
+|-------|------------|---------------|
 | `work.l1.text-2` | `#DDD3C4` | **60%** |
 | `work.l1.text-3` | `#DDD3C4` | **35%** |
 | `work.l1.border` | `#FFFFFF` | **8%** |
@@ -83,33 +86,30 @@ Certains tokens sont définis avec une couleur solide dans le JSON, mais doivent
 | `work.l3.ph-bg` | `#FFFFFF` | **50%** |
 | `work.l3.ph-border` | `#1C1E26` | **12%** |
 
-> **Pourquoi ?** Le format DTCG standard ne supporte pas les couleurs avec opacité variable encodée dans le token. L'opacité est une propriété du shape Penpot, pas de la couleur.
-
 ---
 
 ## Mise à jour des tokens
 
 **Source de vérité : `styles.css`**
 
-Ne jamais éditer les JSON directement. Workflow :
+Workflow :
 1. Modifier `styles.css`
 2. Lancer `/token-audit` → identifier les écarts
-3. Lancer `/token-fix` → corriger les JSON automatiquement
-4. Réimporter les JSON modifiés dans Penpot
+3. Lancer `/token-fix` → corriger `tokens.json` automatiquement
+4. Réimporter `tokens.json` dans Penpot
 
 ---
 
 ## Références CSS ↔ Tokens
 
-| CSS var (`styles.css`) | Token JSON | Set |
-|------------------------|-----------|-----|
-| `--color-background` | `color.background` | `light` / `dark` |
-| `--color-surface` | `color.surface` | `light` / `dark` |
-| `--color-text` | `color.text` | `light` / `dark` |
-| `--color-accent` | `color.accent` | `light` / `dark` |
-| `--color-border` | `color.border` | `light` / `dark` |
-| `--work-l1-bg` | `work.l1.bg` | `work` |
-| `--work-l2-bg` | `work.l2.bg` | `work` |
-| `--work-l2-type-color` | `work.l2.type-color` | `work` |
-| `--work-l3-bg` | `work.l3.bg` | `work` |
-| `--work-accent` | `work.accent` | `work` |
+| CSS var | Token path dans `tokens.json` |
+|---------|-------------------------------|
+| `--color-background` | `light.color.background` / `dark.color.background` |
+| `--color-accent` | `light.color.accent` / `dark.color.accent` |
+| `--color-text` | `light.color.text` / `dark.color.text` |
+| `--color-border` | `light.color.border` / `dark.color.border` |
+| `--work-l1-bg` | `work.l1.bg` |
+| `--work-l2-bg` | `work.l2.bg` |
+| `--work-l2-type-color` | `work.l2.type-color` |
+| `--work-l3-bg` | `work.l3.bg` |
+| `--work-accent` | `work.accent` |
