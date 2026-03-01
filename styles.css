@@ -116,6 +116,47 @@
     --z-modal: 300;
     --z-popover: 400;
     --z-tooltip: 500;
+
+    /* ── Work Section · Imbrication inversée · Proposition A ──────────────
+       L1  Nuit indigo  →  L2  Calcaire clair  →  L3  Glass clair
+       ──────────────────────────────────────────────────────────────────── */
+
+    /* L1 — Section : fond nuit indigo (dark mode exact) */
+    --work-l1-bg:              #0C0E1A;
+    --work-l1-text:            #DDD3C4;
+    --work-l1-text-2:          rgba(221, 211, 196, 0.60);
+    --work-l1-text-3:          rgba(221, 211, 196, 0.35);
+    --work-l1-border:          rgba(255, 255, 255, 0.08);
+
+    /* L2 — Carte projet : calcaire clair qui émerge du fond sombre */
+    --work-l2-bg:              #F2EDE4;
+    --work-l2-border:          #D8D1C4;
+    --work-l2-shadow:          0 4px 20px rgba(12, 14, 26, 0.22), 0 1px 4px rgba(12, 14, 26, 0.12);
+    --work-l2-shadow-hover:    0 12px 40px rgba(12, 14, 26, 0.35), 0 4px 12px rgba(12, 14, 26, 0.20);
+    --work-l2-text:            #1C1E26;
+    --work-l2-text-2:          #4A4840;
+    --work-l2-text-3:          #8A8474;
+    --work-l2-meta-bg:         #E8E2D8;
+    --work-l2-type-border:     rgba(58, 122, 90, 0.30);
+    --work-l2-type-color:      #3A7A5A;
+    --work-l2-type-bg:         rgba(58, 122, 90, 0.06);
+
+    /* Accent section — soleil couchant */
+    --work-accent:             #C46828;
+    --work-accent-rgb:         196, 104, 40;
+    --work-accent-glow-sm:     rgba(196, 104, 40, 0.15);
+    --work-accent-glow-md:     rgba(196, 104, 40, 0.28);
+
+    /* L3 — Bloc visuels : glass clair */
+    --work-l3-bg:              rgba(253, 250, 246, 0.55);
+    --work-l3-border:          rgba(255, 255, 255, 0.55);
+    --work-l3-blur:            blur(16px) saturate(1.4);
+    --work-l3-inset:           inset 0 1px 0 rgba(255, 255, 255, 0.70);
+    --work-l3-shadow:          0 2px 8px rgba(28, 30, 38, 0.06);
+    --work-l3-tabs-bg:         rgba(255, 255, 255, 0.28);
+    --work-l3-tabs-border:     rgba(28, 30, 38, 0.08);
+    --work-l3-ph-bg:           rgba(255, 255, 255, 0.50);
+    --work-l3-ph-border:       rgba(28, 30, 38, 0.12);
 }
 
 /* ============================================
@@ -694,31 +735,44 @@ ul, ol {
 }
 
 /* ============================================
-   PROJECT VISUALS
+   PROJECT VISUALS · L3 Glass clair
+   Bloc visuels en glass, imbriqué dans la carte L2 calcaire
    ============================================ */
 
 .project-visuals {
-    margin: var(--space-8) 0;
-    padding: var(--space-8);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+    /* Saignement horizontal pour flush avec les bords de la carte */
+    margin-left:  calc(-1 * var(--space-8));
+    margin-right: calc(-1 * var(--space-8));
+    margin-top:   var(--space-4);
+    margin-bottom: var(--space-4);
+    border-radius: 0;
+    overflow: hidden;
+    /* L3 Glass */
+    background: var(--work-l3-bg);
+    backdrop-filter: var(--work-l3-blur);
+    -webkit-backdrop-filter: var(--work-l3-blur);
+    border-top:    1px solid var(--work-l3-border);
+    border-bottom: 1px solid var(--work-l3-border);
+    box-shadow: var(--work-l3-inset), var(--work-l3-shadow);
 }
 
 .visual-tabs {
     display: flex;
-    gap: var(--space-2);
-    margin-bottom: var(--space-6);
-    border-bottom: 1px solid var(--color-border);
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--work-l3-tabs-border);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    background: var(--work-l3-tabs-bg);
+    padding: 0 var(--space-4);
 }
 
 .visual-tab {
     font-family: var(--font-display);
-    font-size: var(--font-size-sm);
-    padding: var(--space-3) var(--space-5);
-    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-3) var(--space-4);
+    color: var(--work-l2-text-3);
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
@@ -726,20 +780,23 @@ ul, ol {
     transition: all var(--transition-fast);
     white-space: nowrap;
     flex-shrink: 0;
+    letter-spacing: 0.04em;
 }
 
 .visual-tab:hover {
-    color: var(--color-text);
+    color: var(--work-l2-text);
 }
 
 .visual-tab.active {
-    color: var(--color-accent);
-    border-bottom-color: var(--color-accent);
+    color: var(--work-accent);
+    border-bottom-color: var(--work-accent);
+    font-weight: var(--font-weight-semibold);
 }
 
 .visual-content {
     position: relative;
-    min-height: 300px;
+    min-height: 200px;
+    padding: var(--space-4);
 }
 
 .visual-panel {
@@ -753,12 +810,12 @@ ul, ol {
 
 .visual-grid {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
 }
 
 /* Grid variations */
 .visual-grid.components-showcase {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .visual-grid.system-architecture,
@@ -773,7 +830,7 @@ ul, ol {
 }
 
 .visual-grid.screens-showcase {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .visual-grid.atomic-showcase {
@@ -792,8 +849,8 @@ ul, ol {
 
 .visual-label {
     font-family: var(--font-display);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    color: var(--work-l2-text-2);
     margin-bottom: var(--space-2);
     text-align: center;
 }
@@ -805,11 +862,9 @@ ul, ol {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--space-3);
-    background: linear-gradient(135deg, 
-        var(--color-surface-elevated) 0%, 
-        var(--color-surface) 100%);
-    border: 2px dashed var(--color-border);
+    gap: var(--space-2);
+    background: var(--work-l3-ph-bg);
+    border: 1.5px dashed var(--work-l3-ph-border);
     border-radius: var(--radius-md);
     transition: all var(--transition-base);
     position: relative;
@@ -823,32 +878,29 @@ ul, ol {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--color-shimmer) 50%, 
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--work-accent-glow-sm) 50%,
         transparent 100%);
     animation: shimmerSlow 3s ease-in-out infinite;
 }
 
 .visual-placeholder:hover {
-    border-color: var(--color-accent);
-    background: linear-gradient(135deg, 
-        var(--color-surface) 0%, 
-        var(--color-surface-elevated) 100%);
+    border-color: var(--work-accent);
 }
 
 .placeholder-text {
     font-family: var(--font-display);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text);
+    color: var(--work-l2-text);
     text-align: center;
     padding: 0 var(--space-4);
 }
 
 .placeholder-hint {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    color: var(--work-l2-text-3);
     text-align: center;
     padding: 0 var(--space-4);
 }
@@ -858,12 +910,12 @@ ul, ol {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-accent);
+    color: var(--work-accent);
 }
 
 .visual-divider svg {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
 }
 
 /* Image replacement styles (when real images are added) */
@@ -887,8 +939,8 @@ ul, ol {
     left: 0;
     right: 0;
     padding: var(--space-3) var(--space-4);
-    background: linear-gradient(to top, var(--color-overlay-dark) 0%, transparent 100%);
-    color: var(--color-text);
+    background: linear-gradient(to top, rgba(12, 14, 26, 0.80) 0%, transparent 100%);
+    color: #F2EDE4;
     font-size: var(--font-size-sm);
     opacity: 0;
     transition: opacity var(--transition-base);
@@ -916,12 +968,8 @@ ul, ol {
 }
 
 @keyframes shimmerSlow {
-    0% {
-        left: -100%;
-    }
-    100% {
-        left: 200%;
-    }
+    0%   { left: -100%; }
+    100% { left: 200%;  }
 }
 
 /* ============================================
@@ -929,176 +977,187 @@ ul, ol {
    ============================================ */
 
 .project-chapter {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-5);
 }
 
 .project-chapter + .project-chapter {
-    padding-top: var(--space-6);
-    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--work-l2-border);
 }
 
 .chapter-label {
     font-family: var(--font-display);
-    font-size: var(--font-size-sm);
-    color: var(--color-accent-secondary);
-    margin-bottom: var(--space-4);
-    letter-spacing: 0.05em;
-    opacity: 0.9;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--work-accent);
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
 }
 
 /* ============================================
-   WORK SECTION (EXISTING STYLES)
+   WORK SECTION · Imbrication inversée · Proposition A
+   L1 Nuit indigo → L2 Calcaire clair → L3 Glass
    ============================================ */
+
+/* ── L1 · Section fond nuit indigo ── */
 
 .work {
     padding: var(--space-32) 0;
-    background-color: var(--color-surface-dark);
-    color: var(--color-text-on-dark);
-    --color-text:              var(--color-text-on-dark);
-    --color-text-secondary:    rgba(var(--primitive-ink-rgb), 0.60);
-    --color-text-muted:        rgba(var(--primitive-ink-rgb), 0.35);
-    --color-surface:           rgba(var(--primitive-white-rgb), 0.06);
-    --color-surface-elevated:  rgba(var(--primitive-white-rgb), 0.10);
-    --color-border:            rgba(var(--primitive-white-rgb), 0.12);
-    --color-accent:            var(--color-accent-secondary);
-    --color-accent-secondary:  var(--color-accent-tertiary);
-}
-
-.work .project:hover {
-    box-shadow: var(--shadow-card-hover);
+    background-color: var(--work-l1-bg);
 }
 
 .work .section-title {
+    color: var(--work-l1-text);
     margin-bottom: var(--space-16);
 }
 
+/* ── L2 · Carte projet : fond clair qui émerge du fond sombre ── */
+
 .project {
-    margin-bottom: var(--space-24);
-    padding: var(--space-10);
-    background: linear-gradient(135deg, var(--color-surface-elevated) 0%, var(--color-surface) 100%);
-    border: 1px solid var(--color-border);
+    margin-bottom: var(--space-8);
+    padding: 0;
+    background: var(--work-l2-bg);
+    border: 1px solid var(--work-l2-border);
     border-radius: var(--radius-xl);
-    transition: all var(--transition-base);
+    box-shadow: var(--work-l2-shadow);
+    overflow: hidden;
+    transition: box-shadow var(--transition-base), transform var(--transition-base);
 }
 
 .project:hover {
-    border-color: var(--color-accent);
     transform: translateY(-4px);
-    box-shadow: var(--shadow-card-hover);
+    box-shadow: var(--work-l2-shadow-hover);
 }
 
 .project-header {
-    margin-bottom: var(--space-8);
+    padding: var(--space-6) var(--space-8) var(--space-5);
+    border-bottom: 1px solid var(--work-l2-border);
 }
 
 .project-meta {
     display: flex;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
 }
 
 .project-year,
 .project-type {
     font-family: var(--font-display);
-    font-size: var(--font-size-sm);
-    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-3);
     border-radius: var(--radius-sm);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background-color: var(--work-l2-meta-bg);
+    border: 1px solid var(--work-l2-border);
+    color: var(--work-l2-text-3);
 }
 
 .project-type {
-    color: var(--color-accent);
-    border-color: var(--color-accent);
+    border-color: var(--work-l2-type-border);
+    color: var(--work-l2-type-color);
+    background: var(--work-l2-type-bg);
 }
 
 .project-title {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-2);
+    color: var(--work-l2-text);
+    margin-bottom: var(--space-1);
 }
 
 .project-role {
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    color: var(--work-l2-text-3);
+}
+
+.project-content {
+    padding: var(--space-6) var(--space-8);
 }
 
 .project-content > * {
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-5);
+}
+
+.project-content > *:last-child {
+    margin-bottom: 0;
 }
 
 .project-content h4 {
     font-family: var(--font-display);
-    font-size: var(--font-size-lg);
-    color: var(--color-accent);
-    margin-bottom: var(--space-4);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--work-accent);
+    margin-bottom: var(--space-3);
 }
 
 .project-challenge p,
 .project-approach p {
     line-height: var(--line-height-relaxed);
-    color: var(--color-text-secondary);
+    color: var(--work-l2-text-2);
 }
 
 .approach-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-3);
 }
 
 .approach-list li {
     line-height: var(--line-height-relaxed);
-    color: var(--color-text-secondary);
+    color: var(--work-l2-text-2);
 }
 
 .approach-list strong {
-    color: var(--color-text);
+    color: var(--work-l2-text);
     font-weight: var(--font-weight-semibold);
 }
 
 .outcomes-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-6);
+    gap: var(--space-4);
 }
 
 .outcome-card {
-    padding: var(--space-6);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    padding: var(--space-5);
+    background-color: var(--work-l2-meta-bg);
+    border: 1px solid var(--work-l2-border);
     border-radius: var(--radius-lg);
     text-align: center;
 }
 
 .outcome-number {
     font-family: var(--font-display);
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-bold);
-    color: var(--color-accent);
-    margin-bottom: var(--space-3);
+    color: var(--work-accent);
+    margin-bottom: var(--space-2);
 }
 
 .outcome-card p {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    color: var(--work-l2-text-3);
 }
 
 .project-tools {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
-    padding-top: var(--space-6);
-    border-top: 1px solid var(--color-border);
+    gap: var(--space-2);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--work-l2-border);
 }
 
 .tool {
     font-family: var(--font-display);
     font-size: var(--font-size-xs);
-    padding: var(--space-2) var(--space-4);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--work-l2-meta-bg);
+    border: 1px solid var(--work-l2-border);
     border-radius: var(--radius-full);
-    color: var(--color-text-muted);
+    color: var(--work-l2-text-3);
 }
 
 .project-link {
@@ -1107,8 +1166,9 @@ ul, ol {
     gap: var(--space-2);
     font-family: var(--font-display);
     font-size: var(--font-size-sm);
-    color: var(--color-accent);
-    margin-top: var(--space-4);
+    font-weight: var(--font-weight-medium);
+    color: var(--work-accent);
+    margin-top: var(--space-3);
     transition: all var(--transition-fast);
 }
 
@@ -1495,15 +1555,32 @@ ul, ol {
     
     .visual-grid.before-after {
         grid-template-columns: 1fr;
-        gap: var(--space-6);
+        gap: var(--space-4);
     }
-    
+
     .visual-divider {
         transform: rotate(90deg);
     }
-    
+
     .visual-grid.atomic-showcase {
         grid-template-columns: 1fr;
+    }
+
+    /* Project cards — padding réduit + negative margins recalculés */
+    .project-header,
+    .project-content {
+        padding-left:  var(--space-5);
+        padding-right: var(--space-5);
+    }
+
+    .project-visuals {
+        margin-left:  calc(-1 * var(--space-5));
+        margin-right: calc(-1 * var(--space-5));
+    }
+
+    .outcomes-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
     }
 }
 
