@@ -1,7 +1,7 @@
 ---
 name: token-audit
-description: Vérifie la cohérence entre les tokens CSS (styles.css) et les fichiers JSON DTCG (export/*.json). Trigger sur /token-audit ou quand l'utilisateur demande de vérifier la cohérence des tokens.
-version: 1.0.0
+description: Vérifie la cohérence entre les tokens CSS (styles.css) et le fichier JSON DTCG (export/tokens.json). Trigger sur /token-audit ou quand l'utilisateur demande de vérifier la cohérence des tokens.
+version: 1.1.0
 author: Portfolio MBT
 triggers:
   - /token-audit
@@ -28,38 +28,43 @@ allowed-tools:
 
 ## Objectif
 
-Vérifier que les fichiers `export/*.json` (tokens Penpot) correspondent exactement aux valeurs définies dans `styles.css` (source de vérité).
+Vérifier que `export/tokens.json` correspond exactement aux valeurs définies dans `styles.css` (source de vérité).
 
 ## Source de vérité
 
-**`styles.css`** est TOUJOURS la source de vérité. Les JSON reflètent le CSS, jamais l'inverse.
+**`styles.css`** est TOUJOURS la source de vérité. Le JSON reflète le CSS, jamais l'inverse.
+
+## Structure de `tokens.json`
+
+Fichier unique avec 4 sets (clés de premier niveau) :
+- `primitives` — palette brute, espacements, radius, typographie
+- `light` — tokens sémantiques mode clair (aliases vers `{primitives.color.*}`)
+- `dark` — tokens sémantiques mode sombre
+- `work` — sous-système Work section (L1/L2/L3)
 
 ## Mapping CSS → JSON
 
-| CSS Variable | Set JSON | Token JSON |
-|-------------|---------|-----------|
-| `--primitive-bg` | 00-primitives | `primitive.color.cream` |
-| `--primitive-ink` | 00-primitives | `primitive.color.ink` |
-| `--primitive-accent-rgb` | 00-primitives | `primitive.color.green` (RGB) |
-| `--color-background` | 01-light / 02-dark | `color.background` |
-| `--color-surface` | 01-light / 02-dark | `color.surface` |
-| `--color-surface-elevated` | 01-light / 02-dark | `color.surface-elevated` |
-| `--color-text` | 01-light / 02-dark | `color.text` |
-| `--color-text-secondary` | 01-light / 02-dark | `color.text-secondary` |
-| `--color-text-muted` | 01-light / 02-dark | `color.text-muted` |
-| `--color-border` | 01-light / 02-dark | `color.border` |
-| `--color-accent` | 01-light / 02-dark | `color.accent` |
-| `--work-l1-bg` | 03-work | `work.l1.bg` |
-| `--work-l1-text` | 03-work | `work.l1.text` |
-| `--work-l2-bg` | 03-work | `work.l2.bg` |
-| `--work-l2-border` | 03-work | `work.l2.border` |
-| `--work-l2-text` | 03-work | `work.l2.text` |
-| `--work-l2-text-2` | 03-work | `work.l2.text-2` |
-| `--work-l2-text-3` | 03-work | `work.l2.text-3` |
-| `--work-l2-meta-bg` | 03-work | `work.l2.meta-bg` |
-| `--work-l2-type-color` | 03-work | `work.l2.type-color` |
-| `--work-l3-bg` | 03-work | `work.l3.bg` |
-| `--work-accent` | 03-work | `work.accent` |
+| CSS Variable | Set | Chemin token |
+|-------------|-----|-------------|
+| `--color-background` | `light` / `dark` | `light.color.background` / `dark.color.background` |
+| `--color-surface` | `light` / `dark` | `light.color.surface` / `dark.color.surface` |
+| `--color-surface-elevated` | `light` / `dark` | `light.color.surface-elevated` |
+| `--color-text` | `light` / `dark` | `light.color.text` / `dark.color.text` |
+| `--color-text-secondary` | `light` / `dark` | `light.color.text-secondary` |
+| `--color-text-muted` | `light` / `dark` | `light.color.text-muted` |
+| `--color-border` | `light` / `dark` | `light.color.border` / `dark.color.border` |
+| `--color-accent` | `light` / `dark` | `light.color.accent` / `dark.color.accent` |
+| `--work-l1-bg` | `work` | `work.l1.bg` |
+| `--work-l1-text` | `work` | `work.l1.text` |
+| `--work-l2-bg` | `work` | `work.l2.bg` |
+| `--work-l2-border` | `work` | `work.l2.border` |
+| `--work-l2-text` | `work` | `work.l2.text` |
+| `--work-l2-text-2` | `work` | `work.l2.text-2` |
+| `--work-l2-text-3` | `work` | `work.l2.text-3` |
+| `--work-l2-meta-bg` | `work` | `work.l2.meta-bg` |
+| `--work-l2-type-color` | `work` | `work.l2.type-color` |
+| `--work-l3-bg` | `work` | `work.l3.bg` |
+| `--work-accent` | `work` | `work.accent` |
 
 ## Procédure d'audit
 
@@ -67,13 +72,13 @@ Vérifier que les fichiers `export/*.json` (tokens Penpot) correspondent exactem
 
 Lire `styles.css`, extraire toutes les custom properties du bloc `:root` et du bloc `html[data-theme="dark"]`.
 
-### Étape 2 — Lire les JSON
+### Étape 2 — Lire le JSON
 
-Lire `export/00-primitives.json`, `export/01-light.json`, `export/02-dark.json`, `export/03-work.json`.
+Lire `export/tokens.json`. Identifier les 4 sets de premier niveau.
 
 ### Étape 3 — Résoudre les aliases
 
-Pour chaque token JSON avec `$value` contenant `{primitive.color.*}`, résoudre la valeur réelle depuis `00-primitives.json`.
+Pour chaque token avec `$value` contenant `{primitives.color.*}`, résoudre depuis la section `primitives.color` du même fichier.
 
 ### Étape 4 — Comparer
 
@@ -91,7 +96,7 @@ Produire un rapport structuré :
 ## Rapport token-audit — [date]
 
 ### ✅ Cohérents (N tokens)
-- --color-background → color.background → #F2EDE4 ✓
+- --color-background → light.color.background → #F2EDE4 ✓
 ...
 
 ### ❌ Désalignés (N tokens)
@@ -114,5 +119,5 @@ Produire un rapport structuré :
 ## Notes
 
 - Les tokens à opacité variable (ex: `--work-l1-text-2: rgba(221,211,196,0.60)`) n'ont pas d'équivalent exact en DTCG. Ce sont des ⚠️ attendus, pas des ❌. Les documenter mais ne pas les signaler comme erreurs.
-- Les tokens shadow (`--shadow-*`, `--work-l2-shadow`) ne sont pas dans les JSON (format DTCG shadow non utilisé). Attendus manquants.
-- Les tokens spacing/radius/typography ne sont PAS des couleurs — les traiter séparément (vérifier `00-primitives.json` section `primitive.space.*`, `primitive.radius.*`).
+- Les tokens shadow (`--shadow-*`) ne sont pas dans le JSON. Attendus manquants.
+- Les tokens spacing/radius/typography sont dans `primitives.*` — les vérifier séparément si demandé.
